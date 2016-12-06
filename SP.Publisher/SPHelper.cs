@@ -32,7 +32,7 @@ namespace SP.Publisher
         /// <param name="src">source file path</param>
         /// <param name="dest">destination SharePoint url</param>
         /// <param name="isRecursive">if isRecursive, then publish source and its' hierarchy (files and folders)</param>
-        /// <param name="filter"></param>
+        /// <param name="filter"> to be implemented</param>
         void PublishFolder(string src, string dest, bool isRecursive = true, string filter = null);
     }
 
@@ -54,6 +54,9 @@ namespace SP.Publisher
             Sitetype = siteType;
         }
 
+        /// <summary>
+        /// get SharePoint client
+        /// </summary>
         private ClientContext GetClient()
         {
             if (IsInitialized())
@@ -90,9 +93,9 @@ namespace SP.Publisher
 
                 CreateCascadeFolders(web, SiteUrl, dest);
 
-                var node = FileHelper.PathToFileNode(src);
+                var node = FileHelper.PathToFileNode(src, true, true);
 
-                FileHelper.PrintHierarchy(node, "  ");
+                FileHelper.PrintHierarchy(node);
 
                 var destRoot = string.Concat(SiteUrl.TrimEnd('/'), "/", dest.TrimEnd('/'));
                 PublishNode(web, node, destRoot);
@@ -105,12 +108,15 @@ namespace SP.Publisher
 
             if (node.IsDirectory)
             {
-                var destFolderUrl = string.Concat(rootFolderUrl, "/", node.Name);
-
-                if (!web.IsPropertyAvailable(destFolderUrl))
+                var destFolderUrl = node.IsRoot ? rootFolderUrl : string.Concat(rootFolderUrl, "/", node.Name);
+                /** only publish files/folders under root, not including root itself. */
+                if (!node.IsRoot)
                 {
-                    var destFolder = rootFolder.Folders.Add(destFolderUrl);
-                    web.Context.Load(destFolder);
+                    if (!web.IsPropertyAvailable(destFolderUrl))
+                    {
+                        var destFolder = rootFolder.Folders.Add(destFolderUrl);
+                        web.Context.Load(destFolder);
+                    }
                 }
 
                 if (node.HasChild)
@@ -182,6 +188,11 @@ namespace SP.Publisher
             return !absense;
         }
 
+        /// <summary>
+        /// cast plain text to security string
+        /// </summary>
+        /// <param name="str">plain text string</param>
+        /// <returns>security string cast from plain text</returns>
         private static SecureString ToSecureString(string str)
         {
             var ss = new SecureString();
