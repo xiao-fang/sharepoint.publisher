@@ -7,6 +7,8 @@ namespace SP.Publisher
 {
     public class FileHelper
     {
+        public const string DefaultIndent = @"  ";
+
         /// <summary>
         /// Hierarchy Node
         /// </summary>
@@ -39,7 +41,7 @@ namespace SP.Publisher
         /// </summary>
         /// <param name="node">root node</param>
         /// <param name="indent">indent indicator</param>
-        public static void PrintHierarchy(Node node, string indent)
+        public static void PrintHierarchy(Node node, string indent = DefaultIndent)
         {
             if (node.IsRoot)
             {
