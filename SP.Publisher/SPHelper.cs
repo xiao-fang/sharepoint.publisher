@@ -85,7 +85,7 @@ namespace SP.Publisher
             }
         }
 
-        public void PublishFolder(string src, string dest, bool isRecursive = true, string filter = null)
+        public void PublishFolder(string src, string dest, bool isRecursive = true, string filter = @"*")
         {
             using (var client = GetClient())
             {
@@ -93,7 +93,7 @@ namespace SP.Publisher
 
                 CreateCascadeFolders(web, SiteUrl, dest);
 
-                var node = FileHelper.PathToFileNode(src, true, true);
+                var node = FileHelper.PathToFileNode(src, true, true, filter);
 
                 FileHelper.PrintHierarchy(node);
 

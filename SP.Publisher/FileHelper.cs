@@ -100,7 +100,7 @@ namespace SP.Publisher
         /// <param name="isRecursive">recursive for node children</param>
         /// <param name="isRoot">is root node</param>
         /// <returns>file node from file path</returns>
-        public static FileNode PathToFileNode(string path, bool isRecursive = true, bool isRoot = false)
+        public static FileNode PathToFileNode(string path, bool isRecursive = true, bool isRoot = false, string filter = @"*")
         {
             var name = Path.GetFileName(path);
             var isDir = IsDirectory(path);
@@ -110,7 +110,7 @@ namespace SP.Publisher
             if (isDir)
             {
                 node.IsRoot = isRoot;
-                var childrens = Directory.GetFileSystemEntries(path, "*", SearchOption.TopDirectoryOnly);
+                var childrens = Directory.GetFileSystemEntries(path, filter, SearchOption.TopDirectoryOnly);
                 if (isRecursive)
                 {
                     node.Children = childrens.Select(child => PathToFileNode(child, isRecursive, false));
