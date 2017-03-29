@@ -63,6 +63,12 @@ namespace SP.Publisher
             }
         }
 
+        /// <summary>
+        /// build node hierarchy
+        /// </summary>
+        /// <param name="node">root node</param>
+        /// <param name="indent">indent indicator</param>
+        /// <returns></returns>
         public static string BuildHierarchy(Node node, string indent = DefaultIndent)
         {
             var sb = new StringBuilder();
