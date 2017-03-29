@@ -145,11 +145,11 @@ namespace SP.Publisher
 
                 web.Context.ExecuteQuery();
 
-                LogHelper.Info($"Publish completed: {node.Name} ({node.FullPath} -> {rootFolderUrl})");
+                LogHelper.Info($"Publish completed: {node.Name} -> {rootFolderUrl}");
             }
             catch (Exception ex)
             {
-                LogHelper.Error($"Publish failed: {node.Name} ({node.FullPath} -> {rootFolderUrl})", ex);
+                LogHelper.Error($"Publish failed: {node.Name} -> {rootFolderUrl}", ex);
             }
         }
 
