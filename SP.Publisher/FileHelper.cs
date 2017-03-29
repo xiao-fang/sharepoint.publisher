@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace SP.Publisher
 {
@@ -60,6 +61,31 @@ namespace SP.Publisher
                     PrintHierarchy(child, indent);
                 }
             }
+        }
+
+        public static string BuildHierarchy(Node node, string indent = DefaultIndent)
+        {
+            var sb = new StringBuilder();
+
+            if (node.IsRoot)
+            {
+                sb.AppendLine(node.Name);
+            }
+            else
+            {
+                sb.AppendFormat("{0}{1}{2}", indent, node.HasChild ? "├-" : "└-", node.Name);
+                indent += node.HasChild ? "│ " : "  ";
+            }
+
+            if (node.HasChild)
+            {
+                foreach (var child in node.Children)
+                {
+                  sb.AppendLine(BuildHierarchy(child, indent));
+                }
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>

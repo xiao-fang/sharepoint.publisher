@@ -81,7 +81,7 @@ namespace SP.Publisher
             }
             else
             {
-                throw new Exception("Connection to SharePoint Site is NOT Initialized");
+                throw new Exception("Connection to SharePoint Site is NOT Initialized.");
             }
         }
 
@@ -95,6 +95,7 @@ namespace SP.Publisher
 
                 var node = FileHelper.PathToFileNode(src, true, true, filter);
 
+                LogHelper.Info($"Ensuring SharePoint folder hierarchy[/{dest}]:");
                 FileHelper.PrintHierarchy(node);
 
                 var destRoot = string.Concat(SiteUrl.TrimEnd('/'), "/", dest.TrimEnd('/'));
@@ -104,43 +105,52 @@ namespace SP.Publisher
 
         private static void PublishNode(Web web, FileNode node, string rootFolderUrl)
         {
-            var rootFolder = web.GetFolderByServerRelativeUrl(rootFolderUrl);
-
-            if (node.IsDirectory)
+            try
             {
-                var destFolderUrl = node.IsRoot ? rootFolderUrl : string.Concat(rootFolderUrl, "/", node.Name);
-                /** only publish files/folders under root, not including root itself. */
-                if (!node.IsRoot)
+                var rootFolder = web.GetFolderByServerRelativeUrl(rootFolderUrl);
+
+                if (node.IsDirectory)
                 {
-                    if (!web.IsPropertyAvailable(destFolderUrl))
+                    var destFolderUrl = node.IsRoot ? rootFolderUrl : string.Concat(rootFolderUrl, "/", node.Name);
+                    /** only publish files/folders under root, not including root itself. */
+                    if (!node.IsRoot)
                     {
-                        var destFolder = rootFolder.Folders.Add(destFolderUrl);
-                        web.Context.Load(destFolder);
+                        if (!web.IsPropertyAvailable(destFolderUrl))
+                        {
+                            var destFolder = rootFolder.Folders.Add(destFolderUrl);
+                            web.Context.Load(destFolder);
+                        }
+                    }
+
+                    if (node.HasChild)
+                    {
+                        foreach (var child in node.Children)
+                        {
+                            PublishNode(web, (FileNode)child, destFolderUrl);
+                        }
                     }
                 }
-
-                if (node.HasChild)
+                else
                 {
-                    foreach (var child in node.Children)
+                    var destFileUrl = string.Concat(rootFolderUrl, "/", node.Name);
+                    var destFileInfo = new FileCreationInformation()
                     {
-                        PublishNode(web, (FileNode)child, destFolderUrl);
-                    }
+                        Content = System.IO.File.ReadAllBytes(node.FullPath),
+                        Url = destFileUrl,
+                        Overwrite = true
+                    };
+                    var destFile = rootFolder.Files.Add(destFileInfo);
+                    web.Context.Load(destFile);
                 }
-            }
-            else
-            {
-                var destFileUrl = string.Concat(rootFolderUrl, "/", node.Name);
-                var destFileInfo = new FileCreationInformation()
-                {
-                    Content = System.IO.File.ReadAllBytes(node.FullPath),
-                    Url = destFileUrl,
-                    Overwrite = true
-                };
-                var destFile = rootFolder.Files.Add(destFileInfo);
-                web.Context.Load(destFile);
-            }
 
-            web.Context.ExecuteQuery();
+                web.Context.ExecuteQuery();
+
+                LogHelper.Info($"Publish completed: {node.Name} ({node.FullPath} -> {rootFolderUrl})");
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error($"Publish failed: {node.Name} ({node.FullPath} -> {rootFolderUrl})", ex);
+            }
         }
 
         /// <summary>

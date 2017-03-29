@@ -1,0 +1,14 @@
+﻿{
+  "spSiteUrl": "https://spsite-host/sp-teams-site-or-subsite",
+  "spSiteType": "OnPremise" /* OnPremise / Office365 */,
+  "user": "sp-user",
+  "password": "sp-password",
+  "pubPaths": [
+    {
+      "src": "src-assets-path",
+      "dest": "dest-assets-path" /* relative to spSiteUrl*/,
+      "recursive": true /* publish directories recursively */,
+      "filter": "*" /* filter files to be published, '*' filters all files, e.g. '*.aspx' filters all aspx pages  */
+    }
+  ]
+}
