@@ -10,6 +10,15 @@ namespace SP.Publisher
     {
         public const string DefaultIndent = @"  ";
 
+        /* http://www.fileformat.info/info/unicode/char/0005/index.htm '|' */
+        private const char NODEO = '\u0019';
+
+        /* http://www.fileformat.info/info/unicode/char/0019/index.htm '├' */
+        private const char NODE1 = '\u0019';
+
+        /* http://www.fileformat.info/info/unicode/char/001c/index.htm '└' */
+        private const char NODE2 = '\u001C';
+
         /// <summary>
         /// Hierarchy Node
         /// </summary>
@@ -50,8 +59,10 @@ namespace SP.Publisher
             }
             else
             {
-                Console.WriteLine("{0}{1}{2}", indent, node.HasChild ? "├-" : "└-", node.Name);
-                indent += node.HasChild ? "│ " : "  ";
+                //Console.WriteLine("{0}{1}{2}", indent, node.HasChild ? "├-" : "└-", node.Name);
+                Console.WriteLine("{0}{1}-{2}", indent, node.HasChild ? NODE1 : NODE2, node.Name);
+                //indent += node.HasChild ? "│ " : "  ";
+                indent += $"{(node.HasChild ? NODEO : ' ')} ";
             }
 
             if (node.HasChild)
@@ -79,15 +90,17 @@ namespace SP.Publisher
             }
             else
             {
-                sb.AppendFormat("{0}{1}{2}", indent, node.HasChild ? "├-" : "└-", node.Name);
-                indent += node.HasChild ? "│ " : "  ";
+                //sb.AppendFormat("{0}{1}{2}", indent, node.HasChild ? "├-" : "└-", node.Name);
+                sb.AppendFormat("{0}{1}-{2}", indent, node.HasChild ? NODE1 : NODE2, node.Name);
+                //indent += node.HasChild ? "│ " : "  ";
+                indent += $"{(node.HasChild ? NODEO : ' ')} ";
             }
 
             if (node.HasChild)
             {
                 foreach (var child in node.Children)
                 {
-                  sb.AppendLine(BuildHierarchy(child, indent));
+                    sb.AppendLine(BuildHierarchy(child, indent));
                 }
             }
 
