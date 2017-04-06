@@ -59,9 +59,7 @@ namespace SP.Publisher
             }
             else
             {
-                //Console.WriteLine("{0}{1}{2}", indent, node.HasChild ? "├-" : "└-", node.Name);
                 Console.WriteLine("{0}{1}-{2}", indent, node.HasChild ? NODE1 : NODE2, node.Name);
-                //indent += node.HasChild ? "│ " : "  ";
                 indent += $"{(node.HasChild ? NODEO : ' ')} ";
             }
 
@@ -90,9 +88,7 @@ namespace SP.Publisher
             }
             else
             {
-                //sb.AppendFormat("{0}{1}{2}", indent, node.HasChild ? "├-" : "└-", node.Name);
                 sb.AppendFormat("{0}{1}-{2}", indent, node.HasChild ? NODE1 : NODE2, node.Name);
-                //indent += node.HasChild ? "│ " : "  ";
                 indent += $"{(node.HasChild ? NODEO : ' ')} ";
             }
 
