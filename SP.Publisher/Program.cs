@@ -6,15 +6,19 @@ namespace SP.Publisher
 {
     class Program
     {
+        /// <param name="args">
+        ///  - config.file.path [required]
+        ///  - deploy_username [optional, can also set in config file]
+        ///  - deploy_password [optional, can also set in config file]
+        /// </param>
         static void Main(string[] args)
         {
 #if DEBUG
             Console.BufferHeight = 5000;
-            DevEntry();
-
-#else
-            MainEntry(args);
+            args = new string[] { @"dev-amy-edworks.json" };
 #endif
+
+            MainEntry(args);
         }
 
         static void MainEntry(string[] args)
@@ -29,6 +33,13 @@ namespace SP.Publisher
                 {
                     LogHelper.Warning("No pubPath node need to be published");
                     return;
+                }
+
+                /*if args[1], args[2] set, then update user/password from command line*/
+                if (args.Length >= 3)
+                {
+                    config.SPUser = args[1];
+                    config.Password = args[2];
                 }
 
                 LogHelper.Info($"Start to connect to SharePoint site: {config.SPSiteUrl}");
@@ -58,11 +69,6 @@ namespace SP.Publisher
             spClient.Connect("https://spsite-host/sp-teams-site-or-subsite", "sp-user", "sp-password", SiteType.OnPremise);
             spClient.PublishFolder(assetsPath, "SiteAssets/v1.0", true);
             spClient.PublishFolder(pagesPath, "SitePages", true, "*.aspx");
-        }
-
-        static void DevEntry()
-        {
-            MainEntry(new string[] { @"dev-amy-edworks.json" });
         }
 
         static PublishConfig LoadPublishConfig(string file)
